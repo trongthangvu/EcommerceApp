@@ -1,43 +1,69 @@
 from rest_framework import serializers
-from .models import Category, Product, Cart, CartItem, Order
+from django.contrib.auth.password_validation import validate_password
+from .models import Profile, Store, Product, Review, Order, OrderItem, ShippingAddress, Payment, User
 
-class CategorySerializer(serializers.ModelSerializer):
+
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
-        fields = ['id', 'name']
+        model = Profile
+        fields = ['avatar']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer()
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'profile']
+
+    def create(self, validated_data):
+        profile_data = validated_data.pop('profile')
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        Profile.objects.create(user=user, **profile_data)
+        return user
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
+
+class StoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ['id', 'name', 'description', 'image']
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'image', 'category']
+        fields = ['id', 'name', 'description', 'image', 'price', 'store']
 
-class CartItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'user', 'product', 'rating', 'comment']
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(many=False, read_only=True)
 
     class Meta:
-        model = CartItem
-        fields = ['id', 'cart', 'product', 'quantity']
-
-class CartSerializer(serializers.ModelSerializer):
-    cart_items = CartItemSerializer(many=True, read_only=True)
-    total_price = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Cart
-        fields = ['id', 'user', 'created_at', 'updated_at', 'cart_items', 'total_price']
-
-    def get_total_price(self, obj):
-        total = 0
-        for item in obj.cartitem_set.all():
-            total += item.product.price * item.quantity
-        return total
-
+        model = OrderItem
+        fields = ['id', 'product', 'quantity', 'date_added']
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_items = CartItemSerializer(many=True, read_only=True)
+    order_items = OrderItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'created_at', 'updated_at', 'order_items']
+        fields = ['id', 'user', 'date_ordered', 'complete', 'order_items']
+
+class ShippingAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = ['id', 'user', 'order', 'address', 'city', 'state', 'zipcode']
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'user', 'order', 'payment_method', 'date_paid', 'transaction_id', 'amount']

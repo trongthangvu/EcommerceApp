@@ -1,51 +1,68 @@
+from django.contrib.auth.models import AbstractUser, PermissionsMixin, Permission, Group
 from django.db import models
-from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
-class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children')
-    def __str__(self):
-        return self.name
+
+
+class User(AbstractUser, PermissionsMixin):
+    groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True, related_name='auth_users')
+    user_permissions = models.ManyToManyField(Permission, verbose_name=_('user permissions'), blank=True,
+                                              related_name='auth_users')
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='ecommerce/static/profile/%Y/%m')
+
+class Store(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.ImageField(upload_to='ecommerce/static/store/%Y/%m')
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=100)
     description = models.TextField()
-    price = models.DecimalField(max_digits=9, decimal_places=2)
-    image = models.ImageField(upload_to='ecommerce/static/img/%Y/%m', null=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=None)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    image = models.ImageField(upload_to='ecommerce/static/products/%Y/%m')
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.name
-
-
-class Cart(models.Model):
+class Review(models.Model):
+    RATING_CHOICES = (
+        (1, '1 star'),
+        (2, '2 stars'),
+        (3, '3 stars'),
+        (4, '4 stars'),
+        (5, '5 stars'),
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.user.username}'s Cart"
-
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.quantity} x {self.product.name} in {self.cart}"
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField()
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    date_ordered = models.DateTimeField(auto_now_add=True)
+    complete = models.BooleanField(default=False)
 
-    class Meta:
-        app_label = 'ecommerce'
+class OrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+    date_added = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.user.username}'s Order"
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    address = models.CharField(max_length=200)
+    city = models.CharField(max_length=200)
+    state = models.CharField(max_length=200)
+    zipcode = models.CharField(max_length=200)
+    date_added = models.DateTimeField(auto_now_add=True)
 
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    payment_method = models.CharField(max_length=200)
+    date_paid = models.DateTimeField(auto_now_add=True)
+    transaction_id = models.CharField(max_length=200)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
 

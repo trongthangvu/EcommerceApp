@@ -1,56 +1,70 @@
 from django.contrib import admin
-from .models import Product, Category, Cart, CartItem, Order
+from .models import User, Profile, Store, Product, Review, Order, OrderItem, ShippingAddress, Payment
+
+
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined')
+    list_filter = ('is_staff', 'is_active')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    ordering = ('-date_joined',)
+    filter_horizontal = ()
+    fieldsets = ()
+
+
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'avatar')
+
+
+class StoreAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'image')
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'price', 'image', 'created_at', 'updated_at', 'category')
-    list_display_links = ('id', 'name')
-    list_filter = ('category',)
-    search_fields = ('name', 'category__name')
-    list_per_page = 25
-
-    def delete_model(self, request, obj):
-        obj.delete()
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        self.fields = ['name', 'description', 'price', 'image', 'category']
-        return super().change_view(request, object_id, form_url='', extra_context=None)
-
-    def add_view(self, request, form_url='', extra_context=None):
-        self.fields = ['name', 'description', 'price', 'image', 'category']
-        return super().add_view(request, form_url='', extra_context=None)
+    list_display = ('name', 'description', 'price', 'store')
+    list_filter = ('store',)
+    search_fields = ('name', 'description')
+    ordering = ('-id',)
 
 
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    list_display_links = ('id', 'name')
-    list_per_page = 25
-
-
-class CartAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'created_at', 'updated_at')
-    list_display_links = ('id', 'user')
-    search_fields = ('user',)
-    list_per_page = 25
-
-
-class CartItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'cart', 'product', 'quantity')
-    list_display_links = ('id', 'cart')
-    list_filter = ('cart',)
-    search_fields = ('product__name', 'cart__user__username')
-    list_per_page = 25
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'rating', 'comment')
+    list_filter = ('product', 'rating')
+    search_fields = ('user__username', 'product__name')
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'created_at', 'updated_at')
-    list_display_links = ('id', 'user')
-    search_fields = ('user',)
-    list_per_page = 25
+    list_display = ('user', 'date_ordered', 'complete')
+    list_filter = ('complete',)
+    search_fields = ('user__username',)
+    ordering = ('-id',)
 
 
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('product', 'order', 'quantity', 'date_added')
+    list_filter = ('product', 'order')
+    search_fields = ('product__name',)
+
+
+class ShippingAddressAdmin(admin.ModelAdmin):
+    list_display = ('user', 'order', 'address', 'city', 'state', 'zipcode', 'date_added')
+    list_filter = ('user', 'order')
+    search_fields = ('user__username', 'order__id', 'address', 'city', 'state', 'zipcode')
+    ordering = ('-id',)
+
+
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'order', 'payment_method', 'date_paid', 'transaction_id', 'amount')
+    list_filter = ('user', 'order', 'payment_method')
+    search_fields = ('user__username', 'order__id', 'transaction_id')
+    ordering = ('-id',)
+
+
+admin.site.register(User, UserAdmin)
+admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Store, StoreAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Cart, CartAdmin)
-admin.site.register(CartItem, CartItemAdmin)
+admin.site.register(Review, ReviewAdmin)
 admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem, OrderItemAdmin)
+admin.site.register(ShippingAddress, ShippingAddressAdmin)
+admin.site.register(Payment, PaymentAdmin)

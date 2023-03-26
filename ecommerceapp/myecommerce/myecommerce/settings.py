@@ -103,7 +103,7 @@ pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ecomerceappdb',
+        'NAME': 'ecommercedb',
         'USER': 'root',
         'PASSWORD': '123456789',
         'HOST': 'localhost',
@@ -151,3 +151,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'ecommerce/static')]
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ClientID USiB5y9IoqIRTV10ZSpsy37MV3XzPMO9IupO8RFM
+# ClientSecret pbkdf2_sha256$390000$rdfgoZBvJsg5gwrEHTBVCc$x4km+pHMkn0GpDSLIWb3+12Y7LyS+LRSMiWOGoKYQk0=
