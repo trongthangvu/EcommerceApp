@@ -1,12 +1,16 @@
 from django.urls import include, path
 from rest_framework import routers
-from .views import RegisterView, LoginView, ProfileView, StoreListCreateView, ProductListCreateView, ReviewListCreateView, OrderListCreateView
+from .views import RegisterView, LoginView, ProfileView, StoreListCreateView, ProductListCreateView, \
+    ReviewListCreateView, OrderListCreateView, CategoryViewSet
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register(r'stores', StoreListCreateView, basename='store')
 router.register(r'products', ProductListCreateView, basename='product')
 router.register(r'reviews', ReviewListCreateView, basename='review')
 router.register(r'orders', OrderListCreateView, basename='order')
+router.register(r'categories', CategoryViewSet, basename='category')
+
+
 
 urlpatterns = [
     path('', include(router.urls)),

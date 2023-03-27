@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import Profile, Store, Product, Review, Order, OrderItem, ShippingAddress, Payment, User
+from .models import Profile, Store, Product, Review, Order, OrderItem, ShippingAddress, Payment, User, Category
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -28,6 +28,12 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         validate_password(value)
         return value
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'description')
 
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:

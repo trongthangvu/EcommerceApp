@@ -4,8 +4,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
-from .models import User, Store, Product, Review, Order, OrderItem
-from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, ProductSerializer, ReviewSerializer,OrderSerializer, OrderItemSerializer, PaymentSerializer, ShippingAddressSerializer
+from .models import User, Store, Product, Review, Order, OrderItem, Category
+from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, ProductSerializer, ReviewSerializer, \
+    OrderSerializer, OrderItemSerializer, PaymentSerializer, ShippingAddressSerializer, CategorySerializer
+
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -28,6 +30,10 @@ class LoginView(generics.GenericAPIView):
             })
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer

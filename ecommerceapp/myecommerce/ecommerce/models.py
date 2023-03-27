@@ -8,6 +8,9 @@ class User(AbstractUser, PermissionsMixin):
     groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True, related_name='auth_users')
     user_permissions = models.ManyToManyField(Permission, verbose_name=_('user permissions'), blank=True,
                                               related_name='auth_users')
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -24,6 +27,8 @@ class Product(models.Model):
     image = models.ImageField(upload_to='ecommerce/static/products/%Y/%m')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100, default=None)
+
 
 class Review(models.Model):
     RATING_CHOICES = (
