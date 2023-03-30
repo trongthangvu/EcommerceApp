@@ -152,5 +152,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'ecommerce/static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ClientID USiB5y9IoqIRTV10ZSpsy37MV3XzPMO9IupO8RFM
-# ClientSecret pbkdf2_sha256$390000$rdfgoZBvJsg5gwrEHTBVCc$x4km+pHMkn0GpDSLIWb3+12Y7LyS+LRSMiWOGoKYQk0=
+# ClientID Y6MJvh4UfdDGhift05C5E2iMkUHc0nMkrSyYpxV2
+# ClientSecret l90yG6dfqRyyWdZzd595VXXLIntGPNMYCl2ybGoVpaJoLLrakiBagt0QozG4iYnV13BlxpKFo4dRR80lwIsVWjmFcqp65SZwWzXwt3DSSbYIjQdI95QypWxXAKtDI45Y
