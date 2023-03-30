@@ -8,6 +8,8 @@ class User(AbstractUser, PermissionsMixin):
     groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True, related_name='auth_users')
     user_permissions = models.ManyToManyField(Permission, verbose_name=_('user permissions'), blank=True,
                                               related_name='auth_users')
+    avatar = models.ImageField(upload_to='ecommerce/static/users/%Y/%m', null=True)
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()

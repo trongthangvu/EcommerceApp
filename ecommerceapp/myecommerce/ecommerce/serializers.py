@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
 from .models import Profile, Store, Product, Review, Order, OrderItem, ShippingAddress, Payment, User, Category
 
 
@@ -8,26 +7,32 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['avatar']
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer()
+    image = serializers.SerializerMethodField(source='avatar')
+
+    def get_image(self, user):
+        if user.avatar:
+            request = self.context.get('request')
+            return request.build_absolute_uri('/%s' % user.avatar.name) if request else ''
+
+    def create(self, validated_data):
+        data = validated_data.copy()
+        u = User(**data)
+        u.set_password(u.password)
+        u.save()
+        return u
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'profile']
-
-    def create(self, validated_data):
-        profile_data = validated_data.pop('profile')
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
-        Profile.objects.create(user=user, **profile_data)
-        return user
-
-    def validate_password(self, value):
-        validate_password(value)
-        return value
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'avatar', 'image']
+        extra_kwargs = {
+            'avatar': {'write_only': True},
+            'password': {'write_only': True}
+        }
 
 
 class CategorySerializer(serializers.ModelSerializer):

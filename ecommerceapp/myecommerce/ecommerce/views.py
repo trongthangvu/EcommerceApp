@@ -7,7 +7,7 @@ from django.contrib.auth.models import update_last_login
 from .models import User, Store, Product, Review, Order, OrderItem, Category
 from .paginators import CoursePaginator
 from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, ProductSerializer, ReviewSerializer, \
-    OrderSerializer, OrderItemSerializer, PaymentSerializer, ShippingAddressSerializer, CategorySerializer
+    OrderSerializer, OrderItemSerializer, PaymentSerializer, ShippingAddressSerializer, CategorySerializer, LoginSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -15,7 +15,7 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 class LoginView(generics.GenericAPIView):
-    serializer_class = UserSerializer
+    serializer_class = LoginSerializer
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
