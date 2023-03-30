@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
+
+from .backends import EcommerceBackend
 from .models import User, Store, Product, Review, Order, OrderItem, Category
 from .paginators import CoursePaginator
 from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, ProductSerializer, ReviewSerializer, \
@@ -16,12 +18,13 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
+    authentication_classes = [EcommerceBackend]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')
-        user = authenticate(username=username, password=password)
+        user = EcommerceBackend().authenticate(request, username=username, password=password)
         if user:
             update_last_login(None, user)
             refresh = RefreshToken.for_user(user)
@@ -31,8 +34,6 @@ class LoginView(generics.GenericAPIView):
             })
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
