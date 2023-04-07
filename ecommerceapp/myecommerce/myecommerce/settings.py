@@ -64,7 +64,7 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'path.to.EcommerceBackend',
+    'ecommerce.backends.EcommerceBackend',
 ]
 
 MIDDLEWARE = [
@@ -157,5 +157,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'ecommerce/static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ClientID Y6MJvh4UfdDGhift05C5E2iMkUHc0nMkrSyYpxV2
-# ClientSecret l90yG6dfqRyyWdZzd595VXXLIntGPNMYCl2ybGoVpaJoLLrakiBagt0QozG4iYnV13BlxpKFo4dRR80lwIsVWjmFcqp65SZwWzXwt3DSSbYIjQdI95QypWxXAKtDI45Y
+# ClientID iwrsLGyrCwKUDNev1TwsyvEKgVgGu9f9FZETLFLm
+# ClientSecret OMJ3XaCFFkgMfcCRQKAWDDHvFD82Uar3zcdzQMUZeD8dHrHSfbu7jEjEEJlsZ2JbDNXTeFis7UpR8P6zVGJ1uZ2OIsDRBMd82EvFeYiBCxKzkHC1d0K7wIkrFSNH5ekc
