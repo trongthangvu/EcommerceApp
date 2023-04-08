@@ -1,10 +1,10 @@
+from django.contrib.auth import authenticate
 from rest_framework import generics, permissions, status, parsers, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import update_last_login
-
-from .backends import EcommerceBackend
+from rest_framework.views import APIView
 from .models import User, Store, Product, Review, Order, OrderItem, Category
 from .paginators import CoursePaginator
 from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, ProductSerializer, ReviewSerializer, \
@@ -15,25 +15,22 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
 
-class LoginView(generics.GenericAPIView):
+class LoginView(APIView):
     serializer_class = LoginSerializer
-    authentication_classes = [EcommerceBackend]
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = EcommerceBackend().authenticate(request, username=username, password=password)
-        if user:
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(
+            username=serializer.validated_data['username'],
+            password=serializer.validated_data['password']
+        )
+        if user is not None and user.is_active:
             update_last_login(None, user)
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            })
+            return Response({'message': 'Đăng nhập thành công'}, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
+            return Response({'error': 'Tên đăng nhập hoặc mật khẩu không đúng'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -51,7 +48,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = StoreSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Store.objects.filter(user=self.request.user)
@@ -61,7 +58,7 @@ class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
 
 class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Product.objects.filter(store__user=self.request.user)

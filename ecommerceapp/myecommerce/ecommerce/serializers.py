@@ -77,4 +77,4 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ['id', 'user', 'order', 'payment_method', 'date_paid', 'transaction_id', 'amount']
+        fields = ['id', 'user', 'order', 'payment_method', 'date_paid', 'transaction_id', 'amount','status']
