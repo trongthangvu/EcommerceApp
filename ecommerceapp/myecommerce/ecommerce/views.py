@@ -1,19 +1,30 @@
 from django.contrib.auth import authenticate
 from rest_framework import generics, permissions, status, parsers, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.models import update_last_login
 from rest_framework.views import APIView
-from .models import User, Store, Product, Review, Order, OrderItem, Category
+from .models import User, Store, Product, Review, Order, OrderItem, Category, Profile
 from .paginators import CoursePaginator
 from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, ProductSerializer, ReviewSerializer, \
-    OrderSerializer, OrderItemSerializer, PaymentSerializer, ShippingAddressSerializer, CategorySerializer, LoginSerializer
+    OrderSerializer, OrderItemSerializer, PaymentSerializer, ShippingAddressSerializer, CategorySerializer, \
+    LoginSerializer
 
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response({'message': 'Đăng ký tài khoản thành công'}, status=status.HTTP_201_CREATED)
+        except:
+            return Response({'error': 'Đăng ký tài khoản thất bại'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(APIView):
     serializer_class = LoginSerializer
@@ -32,41 +43,52 @@ class LoginView(APIView):
         else:
             return Response({'error': 'Tên đăng nhập hoặc mật khẩu không đúng'}, status=status.HTTP_401_UNAUTHORIZED)
 
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = CoursePaginator
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user.profile
-
-class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
-    serializer_class = StoreSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Store.objects.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            return Profile.objects.filter(user=self.request.user)
+        else:
+            return Profile.objects.none()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
-    serializer_class = ProductSerializer
+
+class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
+    serializer_class = StoreSerializer
+
     # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Product.objects.filter(store__user=self.request.user)
+        return Store.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(store__user=self.request.user)
+        serializer.save()
 
-    def destroy(self, request, pk=None):
+
+class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
+    serializer_class = ProductSerializer
+
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Product.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def destroy(self, pk=None):
         try:
             product = self.get_queryset().get(pk=pk)
             product.delete()
@@ -103,7 +125,7 @@ class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
 
 class ReviewListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -111,6 +133,7 @@ class ReviewListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
         products = Product.objects.filter(store__in=Store.objects.all())
         queryset = reviews.filter(product__in=products)
         return queryset
+
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
@@ -133,16 +156,16 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 
         return Response(UserSerializer(u, context={'request': request}).data)
 
+
 class OrderListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return Order.objects.filter(user=user)
+        return Order.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save()
 
     @action(detail=True, methods=['post'])
     def add_item(self, request, pk=None):
