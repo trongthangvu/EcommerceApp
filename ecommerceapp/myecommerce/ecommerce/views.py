@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import generics, permissions, status, parsers, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.models import update_last_login
@@ -13,17 +12,17 @@ from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, Pro
     LoginSerializer
 
 
-class RegisterView(generics.CreateAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        try:
-            serializer = self.serializer_class(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            return Response({'message': 'Đăng ký tài khoản thành công'}, status=status.HTTP_201_CREATED)
-        except:
-            return Response({'error': 'Đăng ký tài khoản thất bại'}, status=status.HTTP_400_BAD_REQUEST)
+# class RegisterView(generics.CreateAPIView):
+#     serializer_class = UserSerializer
+#     permission_classes = [permissions.AllowAny]
+#
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             serializer = self.serializer_class(data=request.data)
+#             serializer.is_valid(raise_exception=True)
+#             return Response({'message': 'Đăng ký tài khoản thành công'}, status=status.HTTP_201_CREATED)
+#         except:
+#             return Response({'error': 'Đăng ký tài khoản thất bại'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -147,6 +146,28 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
     parser_classes = [parsers.MultiPartParser, ]
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(
+                {
+                    'status': 'success',
+                    'message': 'User created successfully',
+                    'user': UserSerializer(user).data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        else:
+            return Response(
+                {
+                    'status': 'error',
+                    'message': 'Failed to create user',
+                    'errors': serializer.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def get_permissions(self):
         if self.action in ['current_user']:
