@@ -96,6 +96,7 @@ class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+    @action(detail=True, methods=['put'])
     def put(self, request, pk=None):
         try:
             product = self.get_queryset().get(pk=pk)
@@ -109,6 +110,7 @@ class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=['patch'])
     def patch(self, request, pk=None):
         try:
             product = self.get_queryset().get(pk=pk)
@@ -123,16 +125,22 @@ class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ReviewListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
+class ReviewListCreateView(viewsets.ViewSet, generics.ListAPIView):
     serializer_class = ReviewSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    queryset = Review.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        user = self.request.user
-        reviews = Review.objects.filter(user=user)
-        products = Product.objects.filter(store__in=Store.objects.all())
-        queryset = reviews.filter(product__in=products)
-        return queryset
+    def get(self, product_id):
+        reviews = Review.objects.filter(product_id=product_id)
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -168,7 +176,7 @@ class OrderListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
         serializer.save()
 
     @action(detail=True, methods=['post'])
-    def add_item(self, request, pk=None):
+    def add_item(self, request):
         order = self.get_object()
         serializer = OrderItemSerializer(data=request.data)
         if serializer.is_valid():
@@ -209,7 +217,7 @@ class OrderListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post'])
-    def set_payment(self, request, pk=None):
+    def set_payment(self, request):
         order = self.get_object()
         serializer = PaymentSerializer(data=request.data)
         if serializer.is_valid():
