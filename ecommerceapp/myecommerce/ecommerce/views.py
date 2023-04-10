@@ -48,12 +48,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = CoursePaginator
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -68,7 +68,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = StoreSerializer
 
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Store.objects.all()
@@ -80,7 +80,7 @@ class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
 class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = ProductSerializer
 
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Product.objects.all()
