@@ -47,7 +47,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = CoursePaginator
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
