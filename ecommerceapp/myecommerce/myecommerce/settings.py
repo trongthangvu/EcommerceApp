@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'ecommerce',
     'oauth2_provider',
+    'corsheaders'
 ]
 
 SWAGGER_SETTINGS = {
@@ -75,7 +76,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 
 ]
 

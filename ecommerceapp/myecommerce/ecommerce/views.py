@@ -78,8 +78,8 @@ class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
 
 class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-
-    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CoursePaginator
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Product.objects.all()

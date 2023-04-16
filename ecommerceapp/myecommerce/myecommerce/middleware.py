@@ -1,4 +1,3 @@
-from django.middleware import cors
 from django.utils.deprecation import MiddlewareMixin
 
 class CorsMiddleware(MiddlewareMixin):
