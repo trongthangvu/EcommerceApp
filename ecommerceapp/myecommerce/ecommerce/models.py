@@ -1,12 +1,8 @@
-from django.contrib.auth.models import AbstractUser, PermissionsMixin, Permission, Group
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
-class User(AbstractUser, PermissionsMixin):
-    groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True, related_name='auth_users')
-    user_permissions = models.ManyToManyField(Permission, verbose_name=_('user permissions'), blank=True,
-                                              related_name='auth_users')
+class User(AbstractUser):
     avatar = models.ImageField(upload_to='ecommerce/static/users/%Y/%m', null=True)
 
 

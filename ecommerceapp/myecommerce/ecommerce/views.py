@@ -12,19 +12,6 @@ from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, Pro
     LoginSerializer
 
 
-# class RegisterView(generics.CreateAPIView):
-#     serializer_class = UserSerializer
-#     permission_classes = [permissions.AllowAny]
-#
-#     def post(self, request, *args, **kwargs):
-#         try:
-#             serializer = self.serializer_class(data=request.data)
-#             serializer.is_valid(raise_exception=True)
-#             return Response({'message': 'Đăng ký tài khoản thành công'}, status=status.HTTP_201_CREATED)
-#         except:
-#             return Response({'error': 'Đăng ký tài khoản thất bại'}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class LoginView(APIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
@@ -76,7 +63,7 @@ class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
         serializer.save()
 
 
-class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
+class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView, ):
     serializer_class = ProductSerializer
     pagination_class = CoursePaginator
     # permission_classes = [permissions.IsAuthenticated]
@@ -92,6 +79,14 @@ class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
             product = self.get_queryset().get(pk=pk)
             product.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        except Product.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def retrieve(self, request, pk=None):
+        try:
+            product = self.get_queryset().get(pk=pk)
+            serializer = self.serializer_class(product)
+            return Response(serializer.data)
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

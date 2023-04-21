@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.conf.global_settings import AUTH_USER_MODEL
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders'
 ]
+AUTH_USER_MODEL = 'ecommerce.User'
 
 SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,  # required for token authentication
@@ -62,6 +65,10 @@ REST_FRAMEWORK = {
 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
 )
 }
+
+# OAUTH2_PROVIDER = {
+#     'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
+# }
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -167,5 +174,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'ecommerce/static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ClientID dHg7zRFSyOpBVaGarM1I9Ubvivx0EdLl7mfDplWW
-# ClientSecret Vs9ES2UiEeRVE1GEYwVzwBpBAFZQD7VDkXX4sQwK4Nqx0SWsnT8DBZdN5pnUK8Txs2HUx7ScO5qL4CXohpgPiMQHqS6yOyjoq5BGvyT4EgtDe6kZi4qXq6QR467KKrTZ
+# ClientID PhBEZ4gP0ZZQ7iADANrM8kNw4SVSKQ1DJt7QoEjW
+# ClientSecret ItlxuZSG0JgtEQvULo91CrQun06lBE9WjFkeTGs0QnKH78bC6CQ2LOAsdUFXG5Djo5fblufLfMCk5JdacX5WBwz0Yk2G3kpxHV8NeLAo6MqYQ3YncZKwNQa4dABdyRsd
