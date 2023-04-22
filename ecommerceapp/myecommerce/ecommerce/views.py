@@ -86,7 +86,10 @@ class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView, ):
         try:
             product = self.get_queryset().get(pk=pk)
             serializer = self.serializer_class(product)
-            return Response(serializer.data)
+            data = serializer.data
+            data['image'] = request.build_absolute_uri(product.image.url)
+            # thêm đường dẫn vào đầu thuộc tính image
+            return Response(data)
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
