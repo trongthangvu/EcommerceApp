@@ -10,7 +10,9 @@ from .paginators import CoursePaginator
 from .serializers import UserSerializer, ProfileSerializer, StoreSerializer, ProductSerializer, ReviewSerializer, \
     OrderSerializer, OrderItemSerializer, PaymentSerializer, ShippingAddressSerializer, CategorySerializer, \
     LoginSerializer
-
+from rest_framework import pagination
+class CoursePagination(pagination.PageNumberPagination):
+    page_size = 100
 
 class LoginView(APIView):
     serializer_class = LoginSerializer
@@ -189,7 +191,7 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 class OrderListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = CoursePaginator
+    pagination_class = CoursePagination
 
     def get_queryset(self):
         return Order.objects.all()
