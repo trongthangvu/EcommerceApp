@@ -34,7 +34,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = CoursePaginator
-    # permission_classes = [permissions.IsAuthenticated]
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
@@ -66,10 +65,13 @@ class StoreListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
 class ProductListCreateView(viewsets.ViewSet, generics.ListCreateAPIView, ):
     serializer_class = ProductSerializer
     pagination_class = CoursePaginator
-    # permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Product.objects.all()
+        queryset = Product.objects.all()
+        category_id = self.request.query_params.get('category', None)
+        if category_id is not None:
+            queryset = queryset.filter(category_id=category_id)
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save()
@@ -186,7 +188,8 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 
 class OrderListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
     serializer_class = OrderSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CoursePaginator
 
     def get_queryset(self):
         return Order.objects.all()

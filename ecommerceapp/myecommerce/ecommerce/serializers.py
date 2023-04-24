@@ -63,11 +63,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'quantity', 'date_added']
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_items = OrderItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'date_ordered', 'complete', 'order_items']
+        fields = ['id', 'user', 'date_ordered', 'complete',]
 
 
 class ShippingAddressSerializer(serializers.ModelSerializer):
