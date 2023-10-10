@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="6cf1ec76-2aab-4ba3-a198-578192b1cd9c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerceapp/myecommerce/ecommerce/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerceapp/myecommerce/ecommerce/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerceapp/myecommerce/ecommerce/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerceapp/myecommerce/ecommerce/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerceapp/myecommerce/myecommerce/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerceapp/myecommerce/myecommerce/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

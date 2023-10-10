@@ -4,6 +4,8 @@ from django.db import models
 
 class User(AbstractUser):
     avatar = models.ImageField(upload_to='ecommerce/static/users/%Y/%m', null=True)
+    address = models.CharField(max_length=200, default=None)
+    phone_number = models.CharField(max_length=20, default=None)
 
 
 class Category(models.Model):
