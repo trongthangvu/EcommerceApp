@@ -91,7 +91,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3005', # Địa chỉ web của bạn
+    'http://localhost:3001', # Địa chỉ web của bạn
 )
 
 ROOT_URLCONF = 'myecommerce.urls'

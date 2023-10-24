@@ -248,3 +248,7 @@ class OrderListCreateView(viewsets.ViewSet, generics.ListCreateAPIView):
             serializer.save(order=order)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def search_product(query):
+    # Sử dụng Django ORM để tìm kiếm sản phẩm có tên chứa truy vấn
+    results = Product.objects.filter(name__icontains=query)
+    return results

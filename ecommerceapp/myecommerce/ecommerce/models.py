@@ -32,6 +32,8 @@ class Product(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=None)
 
+def __str__(self):
+        return self.name
 
 class Review(models.Model):
     RATING_CHOICES = (
@@ -85,3 +87,6 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='unpaid')
+
+
+

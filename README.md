@@ -1,1 +1,2 @@
 # EcommerceApp
+cd myecommere
